@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">Player Info</div>
+            <div class="card-body">
+                <h5>{{ user.username }}</h5>
+                <p>Balance: $<span id="balance-display">{{ user.balance }}</span></p>
+                <hr>
+                <form action="{{ url_for('deposit') }}" method="post" class="row g-2">
+                    <div class="col-auto">
+                        <input type="number" name="amount" class="form-control" placeholder="Amount" min="1" required>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-success">Deposit Credits</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Game Controls</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>Bet Amount</label>
+                    <input type="number" id="bet-amount" class="form-control" value="10" min="1">
+                </div>
+                <button id="btn-start" class="btn btn-primary w-100 mb-2">New Game</button>
+                <div id="action-buttons" style="display:none;">
+                    <button id="btn-hit" class="btn btn-warning w-100 mb-2">Hit</button>
+                    <button id="btn-stand" class="btn btn-danger w-100">Stand</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">Game Board</div>
+            <div class="card-body game-area text-center">
+                <div id="message-area" class="alert alert-info" style="display:none;"></div>
+
+                <h4>Dealer's Hand <span id="dealer-score" class="badge bg-secondary"></span></h4>
+                <div id="dealer-cards" class="mb-4"></div>
+
+                <hr style="border-color: rgba(255,255,255,0.3);">
+
+                <h4>Your Hand <span id="player-score" class="badge bg-secondary"></span></h4>
+                <div id="player-cards"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentGameId = null;
+
+function renderCard(card, hidden=false) {
+    if (hidden) {
+        return `<div class="card-playing bg-primary text-white">?</div>`;
+    }
+    const suits = {'H': '♥', 'D': '♦', 'C': '♣', 'S': '♠'};
+    return `<div class="card-playing suit-${card.suit}">${card.rank}${suits[card.suit]}</div>`;
+}
+
+function updateBoard(data) {
+    // Update Balance
+    if (data.balance !== undefined) {
+        document.getElementById('balance-display').innerText = data.balance;
+    }
+
+    // Render Player Hand
+    const pCards = document.getElementById('player-cards');
+    pCards.innerHTML = '';
+    data.player_hand.forEach(c => pCards.innerHTML += renderCard(c));
+    document.getElementById('player-score').innerText = data.player_value;
+
+    // Render Dealer Hand
+    const dCards = document.getElementById('dealer-cards');
+    dCards.innerHTML = '';
+
+    if (data.dealer_hand) {
+        // Full reveal (game over)
+        data.dealer_hand.forEach(c => dCards.innerHTML += renderCard(c));
+        document.getElementById('dealer-score').innerText = data.dealer_value;
+    } else if (data.dealer_card) {
+        // Partial reveal
+        dCards.innerHTML += renderCard(data.dealer_card);
+        dCards.innerHTML += renderCard(null, true); // Hidden card
+        document.getElementById('dealer-score').innerText = '?';
+    }
+
+    // Handle Game State
+    if (data.status === 'finished') {
+        document.getElementById('action-buttons').style.display = 'none';
+        document.getElementById('btn-start').style.display = 'block';
+
+        const msgDiv = document.getElementById('message-area');
+        msgDiv.style.display = 'block';
+        if (data.result === 'win') {
+            msgDiv.className = 'alert alert-success';
+            msgDiv.innerText = 'You Win!';
+        } else if (data.result === 'lose') {
+            msgDiv.className = 'alert alert-danger';
+            msgDiv.innerText = 'You Lose!';
+        } else {
+            msgDiv.className = 'alert alert-warning';
+            msgDiv.innerText = 'Push (Tie)!';
+        }
+    } else {
+        document.getElementById('action-buttons').style.display = 'block';
+        document.getElementById('btn-start').style.display = 'none';
+        document.getElementById('message-area').style.display = 'none';
+    }
+}
+
+document.getElementById('btn-start').addEventListener('click', async () => {
+    const bet = document.getElementById('bet-amount').value;
+    const res = await fetch('/game/start', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({bet: bet})
+    });
+    const data = await res.json();
+    if (data.error) {
+        alert(data.error);
+    } else {
+        currentGameId = data.game_id;
+        data.status = 'active'; // Force active since we just started
+        updateBoard(data);
+    }
+});
+
+document.getElementById('btn-hit').addEventListener('click', async () => {
+    if (!currentGameId) return;
+    const res = await fetch('/game/hit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({game_id: currentGameId})
+    });
+    const data = await res.json();
+    updateBoard(data);
+});
+
+document.getElementById('btn-stand').addEventListener('click', async () => {
+    if (!currentGameId) return;
+    const res = await fetch('/game/stand', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({game_id: currentGameId})
+    });
+    const data = await res.json();
+    updateBoard(data);
+});
+</script>
+{% endblock %}
