@@ -11,12 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY',
-    'django-insecure-toqi999bigwin-casino-super-secret-key-pws-2025'
+    'SECRET_KEY',
+    os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-toqi999bigwin-casino-super-secret-key-pws-2026')
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('PRODUCTION', 'False').lower() != 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true' if 'DEBUG' in os.environ else os.environ.get('PRODUCTION', 'False').lower() != 'true'
 
 ALLOWED_HOSTS = [
     '*',
@@ -25,12 +25,14 @@ ALLOWED_HOSTS = [
     '10.0.2.2',
     '*.pws.cs.ui.ac.id',
     'pws.cs.ui.ac.id',
-    'muhammad-syarifudin51-toqi999bigwin.pws.cs.ui.ac.id',
+    'toqi999bigwin.pws.cs.ui.ac.id',
+    'muhammad.syarifudin51-toqi999bigwin.pws.cs.ui.ac.id',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.pws.cs.ui.ac.id',
     'https://pws.cs.ui.ac.id',
+    'https://toqi999bigwin.pws.cs.ui.ac.id',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://10.0.2.2:8000',
@@ -71,7 +73,7 @@ ROOT_URLCONF = 'core_project.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -88,22 +90,29 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core_project.wsgi.application'
 ASGI_APPLICATION = 'core_project.asgi.application'
 
-# Database
-# Default: SQLite for local dev; uses PostgreSQL when DATABASE_URL is set in PWS
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database Setup
+# Jika PRODUCTION=True (di PWS), gunakan PostgreSQL PWS. Jika tidak, gunakan SQLite lokal.
+if os.environ.get('PRODUCTION', 'False').lower() == 'true':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'muhammad.syarifudin51'),
+            'USER': os.environ.get('DB_USER', 'muhammad.syarifudin51'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'sK8Pj2BW'),
+            'HOST': os.environ.get('DB_HOST', '10.119.106.139'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+            'OPTIONS': {
+                'options': f"-c search_path={os.environ.get('SCHEMA', 'public')}"
+            }
+        }
     }
-}
-
-database_url = os.environ.get('DATABASE_URL')
-if database_url:
-    try:
-        import dj_database_url
-        DATABASES['default'] = dj_database_url.parse(database_url, conn_max_age=600)
-    except Exception as e:
-        print(f"Warning: Failed to parse DATABASE_URL with dj_database_url: {e}")
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
