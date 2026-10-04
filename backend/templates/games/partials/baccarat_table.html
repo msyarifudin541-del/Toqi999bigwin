@@ -1,0 +1,145 @@
+<div class="glass-panel" style="padding: 28px; position: relative;">
+    <!-- Outcome Announcement Banner (if round just finished) -->
+    {% if result %}
+    <div style="text-align: center; margin-bottom: 24px; animation: modalIn 0.3s ease-out;">
+        <div style="display: inline-block; padding: 8px 24px; border-radius: 9999px;
+            {% if payout_info.status == 'WON' %}
+                background: rgba(16, 185, 129, 0.25); border: 1px solid #10B981; color: #10B981;
+            {% elif payout_info.status == 'PUSH' %}
+                background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #F59E0B;
+            {% else %}
+                background: rgba(239, 68, 68, 0.25); border: 1px solid #EF4444; color: #EF4444;
+            {% endif %}">
+            <span style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; letter-spacing: 1px;">
+                {{ result.summary|upper }}
+            </span>
+            {% if payout_info.status == 'WON' %}
+                <span style="font-weight: 800; font-size: 1.2rem; margin-left: 10px;">
+                    (+${{ payout_info.total_return|floatformat:2 }})
+                </span>
+            {% elif payout_info.status == 'PUSH' %}
+                <span style="font-weight: 700; margin-left: 10px;">(Bet Refunded)</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Hands Arena: Player vs Banker -->
+    <div class="baccarat-arena">
+        <!-- Player Hand Box -->
+        <div class="hand-box player">
+            <div class="hand-title" style="color: var(--neon-cyan);">PLAYER (PUNTO)</div>
+            <div class="cards-row">
+                {% if result.player.cards %}
+                    {% for c in result.player.cards %}
+                        <div class="card-item {{ c.color }}">
+                            <div style="font-size: 0.85rem;">{{ c.rank }}</div>
+                            <div class="card-center">{{ c.suit }}</div>
+                            <div style="font-size: 0.85rem; text-align: right;">{{ c.rank }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Placeholder initial cards -->
+                    <div class="card-item black" style="opacity: 0.4;">
+                        <div>🂠</div><div class="card-center">🂠</div><div>🂠</div>
+                    </div>
+                    <div class="card-item black" style="opacity: 0.4;">
+                        <div>🂠</div><div class="card-center">🂠</div><div>🂠</div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="hand-score">
+                {% if result %}{{ result.player.score }}{% else %}0{% endif %}
+            </div>
+            {% if result.player.is_natural %}
+                <span style="color: var(--gold-light); font-weight: 700; font-size: 0.8rem;">★ NATURAL</span>
+            {% endif %}
+        </div>
+
+        <!-- Banker Hand Box -->
+        <div class="hand-box banker">
+            <div class="hand-title" style="color: var(--neon-rose);">BANKER (BANCO)</div>
+            <div class="cards-row">
+                {% if result.banker.cards %}
+                    {% for c in result.banker.cards %}
+                        <div class="card-item {{ c.color }}">
+                            <div style="font-size: 0.85rem;">{{ c.rank }}</div>
+                            <div class="card-center">{{ c.suit }}</div>
+                            <div style="font-size: 0.85rem; text-align: right;">{{ c.rank }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Placeholder initial cards -->
+                    <div class="card-item red" style="opacity: 0.4;">
+                        <div>🂠</div><div class="card-center">🂠</div><div>🂠</div>
+                    </div>
+                    <div class="card-item red" style="opacity: 0.4;">
+                        <div>🂠</div><div class="card-center">🂠</div><div>🂠</div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="hand-score">
+                {% if result %}{{ result.banker.score }}{% else %}0{% endif %}
+            </div>
+            {% if result.banker.is_natural %}
+                <span style="color: var(--gold-light); font-weight: 700; font-size: 0.8rem;">★ NATURAL</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Deal Form & Bet Zone Selector -->
+    <form method="POST" action="{% url 'baccarat_deal' %}" hx-post="{% url 'baccarat_deal' %}" hx-target="#baccaratArena" hx-swap="outerHTML">
+        {% csrf_token %}
+        <input type="hidden" name="bet_choice" id="betChoiceInput" value="{% if bet %}{{ bet.bet_choice }}{% else %}PLAYER{% endif %}">
+        
+        <!-- Bet Zones -->
+        <div class="bet-zones">
+            <div class="bet-zone-btn {% if not bet or bet.bet_choice == 'PLAYER' %}selected{% endif %}" data-choice="PLAYER">
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--neon-cyan);">
+                    PLAYER
+                </div>
+                <span class="payout-rate">PAYS 1 : 1</span>
+            </div>
+
+            <div class="bet-zone-btn {% if bet and bet.bet_choice == 'TIE' %}selected{% endif %}" data-choice="TIE">
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--neon-emerald);">
+                    TIE
+                </div>
+                <span class="payout-rate">PAYS 8 : 1</span>
+            </div>
+
+            <div class="bet-zone-btn {% if bet and bet.bet_choice == 'BANKER' %}selected{% endif %}" data-choice="BANKER">
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--neon-rose);">
+                    BANKER
+                </div>
+                <span class="payout-rate">PAYS 0.95 : 1 (5% Comm)</span>
+            </div>
+        </div>
+
+        <!-- Chips & Bet Amount -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; border-top: 1px solid var(--border-glass); padding-top: 20px;">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">SELECT CHIP:</span>
+                <div class="chip-container" style="margin: 0;">
+                    <div class="chip-btn chip-1" data-value="1">$1</div>
+                    <div class="chip-btn chip-5" data-value="5">$5</div>
+                    <div class="chip-btn chip-10 active" data-value="10">$10</div>
+                    <div class="chip-btn chip-25" data-value="25">$25</div>
+                    <div class="chip-btn chip-100" data-value="100">$100</div>
+                    <div class="chip-btn chip-500" data-value="500">$500</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">Wager:</span>
+                    <input type="number" name="bet_amount" id="betAmountInput" class="form-control" style="width: 100px; text-align: center; font-weight: 700;" value="{% if bet %}{{ bet.bet_amount|floatformat:0 }}{% else %}10{% endif %}" min="1" max="5000">
+                </div>
+
+                <button type="submit" class="btn btn-gold" id="dealBtn" style="padding: 12px 36px; font-size: 1.1rem; letter-spacing: 0.5px;">
+                    DEAL CARDS 🎴
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Baccarat (Punto Banco) - Toqi999bigwin{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+    <div>
+        <h1 style="font-family: var(--font-heading); font-size: 2.2rem; color: #fff; line-height: 1;">
+            BACCARAT &bull; PUNTO BANCO
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.88rem;">
+            8-Deck Shoe &bull; Automated Third-Card Tableau Rules &bull; Macau High-Limit Table
+        </p>
+    </div>
+
+    <!-- Bead Plate / Roadmap History -->
+    <div style="display: flex; align-items: center; gap: 8px; background: rgba(14, 19, 31, 0.85); padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+        <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">BEAD PLATE:</span>
+        <div id="beadPlate" style="display: flex; gap: 6px; overflow-x: auto;">
+            {% for round in recent_history %}
+                {% if round.outcome_data.winner == 'PLAYER' %}
+                    <span title="Player Win" style="width: 20px; height: 20px; border-radius: 50%; background: #06B6D4; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #000;">P</span>
+                {% elif round.outcome_data.winner == 'BANKER' %}
+                    <span title="Banker Win" style="width: 20px; height: 20px; border-radius: 50%; background: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #fff;">B</span>
+                {% else %}
+                    <span title="Tie" style="width: 20px; height: 20px; border-radius: 50%; background: #10B981; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #000;">T</span>
+                {% endif %}
+            {% empty %}
+                <span style="color: var(--text-dim); font-size: 0.8rem;">No hands played in this shoe yet.</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Main Interactive Table Container (Target for HTMX Swaps) -->
+<div id="baccaratArena">
+    {% include 'games/partials/baccarat_table.html' %}
+</div>
+
+<!-- Error / Notification banner -->
+<div id="baccaratMessageContainer" style="margin-top: 14px;"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% load static %}
+<script src="{% static 'js/baccarat.js' %}"></script>
+{% endblock %}
