@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account - Toqi999bigwin{% endblock %}
+
+{% block content %}
+<div style="max-width: 460px; margin: 40px auto;">
+    <div class="glass-card" style="padding: 36px; border-top: 4px solid var(--gold-primary);">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 2.5rem;">🪙</span>
+            <h1 style="font-family: var(--font-heading); font-size: 2rem; color: #fff; margin-top: 8px;">
+                JOIN TOQI999BIGWIN
+            </h1>
+            <p style="color: var(--gold-light); font-weight: 600; font-size: 0.95rem; margin-top: 4px;">
+                🎁 Get $1,000 Welcome Chips Instantly!
+            </p>
+        </div>
+
+        <div id="authErrorsContainer"></div>
+
+        <form method="POST" action="{% url 'register' %}" hx-post="{% url 'register' %}" hx-target="#authErrorsContainer" hx-swap="innerHTML">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="regUsername">Username</label>
+                <input type="text" name="username" id="regUsername" class="form-control" required placeholder="Choose a username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="regEmail">Email (Optional)</label>
+                <input type="email" name="email" id="regEmail" class="form-control" placeholder="user@example.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="regPassword">Password (Min. 6 chars)</label>
+                <input type="password" name="password" id="regPassword" class="form-control" required placeholder="••••••••">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="regConfirm">Confirm Password</label>
+                <input type="password" name="password_confirm" id="regConfirm" class="form-control" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-gold" id="registerSubmitBtn" style="width: 100%; padding: 12px; margin-top: 8px;">
+                Create Free Account &rarr;
+            </button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Already a member? 
+                <a href="{% url 'login' %}" style="color: var(--gold-primary); text-decoration: none; font-weight: 600;">
+                    Sign In
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

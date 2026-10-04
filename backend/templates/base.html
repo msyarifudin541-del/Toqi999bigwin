@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Toqi999bigwin - Premium Online Casino Simulator{% endblock %}</title>
+    <meta name="description" content="Toqi999bigwin - High-stakes Baccarat (Punto Banco) and Provably Fair Cross Chicken (Crash) simulator. Powered by Django and Flutter.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Static CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- HTMX and Audio Engine -->
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="{% static 'js/audio.js' %}"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="brand-logo" id="brandLogoLink">
+                <span>TOQI</span>
+                <span class="brand-badge">999 BIGWIN</span>
+            </a>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{% url 'game_lobby' %}" class="nav-link" id="navLobby">Lobby</a></li>
+                    <li><a href="{% url 'baccarat' %}" class="nav-link" id="navBaccarat">Baccarat</a></li>
+                    <li><a href="{% url 'crash' %}" class="nav-link" id="navCrash">Cross Chicken</a></li>
+                    <li><a href="{% url 'provably_fair' %}" class="nav-link" id="navFair">Fairness</a></li>
+                </ul>
+            </nav>
+
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <!-- Sound Toggle -->
+                <button type="button" class="btn btn-outline" id="audioToggleBtn" style="padding: 6px 12px; font-size: 0.9rem;" onclick="toggleAudio()">
+                    🔊 Sound
+                </button>
+
+                {% if user.is_authenticated %}
+                    <!-- Live Wallet Badge -->
+                    <div id="walletBadgeContainer" hx-get="{% url 'wallet_badge' %}" hx-trigger="walletUpdated from:body">
+                        <div class="wallet-badge">
+                            <span style="color: var(--gold-primary);">🪙</span>
+                            <span class="wallet-balance">${{ user.wallet.balance|floatformat:2 }}</span>
+                            <button type="button" class="btn btn-gold" style="padding: 3px 10px; font-size: 0.8rem; margin-left: 6px;" onclick="openDepositModal()">
+                                + Reload
+                            </button>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline" id="navDashboard" style="padding: 8px 16px;">
+                        👤 {{ user.username }}
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-danger" id="navLogout" style="padding: 8px 14px; font-size: 0.85rem;">
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline" id="navLogin">Sign In</a>
+                    <a href="{% url 'register' %}" class="btn btn-gold" id="navRegister">Play Free</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages / Toast Container -->
+    {% if messages %}
+    <div class="toast-container" id="toastContainer">
+        {% for message in messages %}
+        <div class="toast {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Dynamic Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Quick Deposit Modal -->
+    {% if user.is_authenticated %}
+    <div class="modal-backdrop" id="depositModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeDepositModal()">&times;</button>
+            <h2 style="font-family: var(--font-heading); color: var(--gold-light); margin-bottom: 8px;">Reload Free Chips</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                Add instant virtual simulation credits to test games with zero real-money risk.
+            </p>
+
+            <form method="POST" action="{% url 'deposit' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Select Chip Package</label>
+                    <div class="chip-container">
+                        <button type="button" class="chip-btn chip-10" onclick="setDepositVal(100)">$100</button>
+                        <button type="button" class="chip-btn chip-25" onclick="setDepositVal(500)">$500</button>
+                        <button type="button" class="chip-btn chip-100" onclick="setDepositVal(1000)">$1k</button>
+                        <button type="button" class="chip-btn chip-500" onclick="setDepositVal(5000)">$5k</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="depositAmountInput">Custom Amount ($)</label>
+                    <input type="number" step="10" min="10" name="amount" id="depositAmountInput" class="form-control" value="500">
+                </div>
+
+                <button type="submit" class="btn btn-gold" style="width: 100%; padding: 12px;">
+                    Claim Free Chips 🪙
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer style="margin-top: auto; border-top: 1px solid var(--border-glass); background: #05070B; padding: 24px 0; text-align: center; color: var(--text-dim); font-size: 0.85rem;">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+            <p><strong>Toqi999bigwin</strong> &copy; 2025. Academic Full-Stack Platform Architecture (Django REST Framework + Flutter).</p>
+            <p style="margin-top: 4px;">Punto Banco Baccarat Engine &bull; Provably Fair HMAC-SHA256 Cross Chicken Engine &bull; 100% Free Virtual Chips.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleAudio() {
+            if (window.soundEngine) {
+                const muted = window.soundEngine.toggleMute();
+                document.getElementById('audioToggleBtn').innerText = muted ? '🔇 Muted' : '🔊 Sound';
+            }
+        }
+        function openDepositModal() {
+            const m = document.getElementById('depositModal');
+            if (m) m.classList.add('active');
+        }
+        function closeDepositModal() {
+            const m = document.getElementById('depositModal');
+            if (m) m.classList.remove('active');
+        }
+        function setDepositVal(val) {
+            const el = document.getElementById('depositAmountInput');
+            if (el) el.value = val;
+            if (window.soundEngine) window.soundEngine.chip();
+        }
+        // Auto-dismiss toasts after 4s
+        setTimeout(() => {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(t => t.style.display = 'none');
+        }, 4000);
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

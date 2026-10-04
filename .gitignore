@@ -1,5 +1,23 @@
+# Python & Django
+*.pyc
+__pycache__/
+*.sqlite3
+db.sqlite3
 instance/
 *.db
-__pycache__/
-*.pyc
-server.log
+staticfiles/
+.env
+.venv/
+env/
+venv/
+*.log
+
+# macOS
+.DS_Store
+
+# Flutter & Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies

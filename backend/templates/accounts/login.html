@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - Toqi999bigwin{% endblock %}
+
+{% block content %}
+<div style="max-width: 440px; margin: 40px auto;">
+    <div class="glass-card" style="padding: 36px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 2.5rem;">👑</span>
+            <h1 style="font-family: var(--font-heading); font-size: 2rem; color: #fff; margin-top: 8px;">
+                SIGN IN TO PLAY
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Enter your credentials to access your high-roller casino wallet.
+            </p>
+        </div>
+
+        <div id="authErrorsContainer"></div>
+
+        <form method="POST" action="{% url 'login' %}" hx-post="{% url 'login' %}" hx-target="#authErrorsContainer" hx-swap="innerHTML">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="loginUsername">Username</label>
+                <input type="text" name="username" id="loginUsername" class="form-control" required placeholder="Your username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="loginPassword">Password</label>
+                <input type="password" name="password" id="loginPassword" class="form-control" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-gold" id="loginSubmitBtn" style="width: 100%; padding: 12px; margin-top: 8px;">
+                Sign In to Casino &rarr;
+            </button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Don't have an account? 
+                <a href="{% url 'register' %}" style="color: var(--gold-primary); text-decoration: none; font-weight: 600;">
+                    Register with $1,000 Bonus
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

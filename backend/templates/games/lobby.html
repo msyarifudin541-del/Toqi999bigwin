@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Casino Lobby - Toqi999bigwin{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+    <h1 style="font-family: var(--font-heading); font-size: 2.4rem; color: #fff;">
+        CASINO FLOOR &bull; LIVE ROOMS
+    </h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+        Choose your game below. Authentic Vegas-style Punto Banco and Provably Fair Cross Chicken are open 24/7.
+    </p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px; margin-bottom: 40px;">
+    <!-- Baccarat Card -->
+    <div class="glass-card" style="padding: 28px; border-top: 4px solid var(--neon-cyan);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <span style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--neon-cyan); font-weight: 700;">LIVE CASINO TABLE</span>
+            <span style="color: #10B981; font-size: 0.85rem; font-weight: 600;">● Online</span>
+        </div>
+
+        <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: #fff; margin-bottom: 8px;">
+            Baccarat (Punto Banco)
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
+            Standard 8-deck shoe with automated third-card tableau drawing rules. Place your bets on Player, Banker, or Tie.
+        </p>
+
+        <div style="background: rgba(10, 14, 23, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; display: flex; justify-content: space-between;">
+            <span>Min Bet: <strong>$1.00</strong></span>
+            <span>Max Bet: <strong>$5,000</strong></span>
+            <span>RTP: <strong>98.94%</strong></span>
+        </div>
+
+        <a href="{% url 'baccarat' %}" class="btn btn-gold" id="lobbyBaccaratBtn" style="width: 100%;">
+            Join Table &rarr;
+        </a>
+    </div>
+
+    <!-- Cross Chicken Crash Card -->
+    <div class="glass-card" style="padding: 28px; border-top: 4px solid var(--gold-primary);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <span style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--gold-primary); font-weight: 700;">PROVABLY FAIR MULTIPLIER</span>
+            <span style="color: #10B981; font-size: 0.85rem; font-weight: 600;">● Online</span>
+        </div>
+
+        <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: #fff; margin-bottom: 8px;">
+            Cross Chicken (Crash)
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
+            Dash across the frantic highway! The multiplier climbs with every second. Cash out before the truck splats!
+        </p>
+
+        <div style="background: rgba(10, 14, 23, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; display: flex; justify-content: space-between;">
+            <span>Min Bet: <strong>$1.00</strong></span>
+            <span>Max Mult: <strong>250.00x</strong></span>
+            <span>Fairness: <strong>HMAC-SHA256</strong></span>
+        </div>
+
+        <a href="{% url 'crash' %}" class="btn btn-emerald" id="lobbyCrashBtn" style="width: 100%;">
+            Enter Arena &rarr;
+        </a>
+    </div>
+</div>
+
+<!-- Recent Big Wins Feed -->
+<div class="glass-panel" style="padding: 24px;">
+    <h3 style="font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 16px; color: var(--gold-light);">
+        🏆 Recent High-Roller Big Wins
+    </h3>
+
+    {% if recent_wins %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;">
+        {% for win in recent_wins %}
+        <div style="background: rgba(14, 19, 31, 0.7); border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px;">
+            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ win.user.username }}</div>
+            <div style="color: var(--text-muted); font-size: 0.8rem;">{{ win.game_round.game_type }}</div>
+            <div style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; color: #10B981; margin-top: 4px;">
+                +${{ win.payout|floatformat:2 }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Be the first high roller to score a massive multiplier today!</p>
+    {% endif %}
+</div>
+{% endblock %}

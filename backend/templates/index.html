@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Toqi999bigwin - Luxury Online Casino Simulator{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div style="display: inline-block; margin-bottom: 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid var(--border-gold); padding: 6px 16px; border-radius: 9999px;">
+        <span style="color: var(--gold-light); font-weight: 600; font-size: 0.85rem; letter-spacing: 1px;">⭐ FAIR-RNG CERTIFIED CASINO ENGINE</span>
+    </div>
+
+    <h1 class="hero-title">
+        EXPERIENCE THE THRILL OF<br>HIGH-STAKES SIMULATION
+    </h1>
+    <p class="hero-subtitle">
+        Enter <strong>Toqi999bigwin</strong> — an elite gaming destination featuring authentic 8-deck 
+        <strong>Baccarat (Punto Banco)</strong> and the heart-pounding provably fair 
+        <strong>Cross Chicken (Crash)</strong> multiplier engine.
+    </p>
+
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        {% if user.is_authenticated %}
+            <a href="{% url 'game_lobby' %}" class="btn btn-gold" id="heroPlayBtn" style="padding: 14px 32px; font-size: 1.1rem;">
+                Enter Casino Lobby 🎰
+            </a>
+            <button onclick="openDepositModal()" class="btn btn-emerald" style="padding: 14px 28px; font-size: 1.1rem;">
+                + Claim Free Chips
+            </button>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-gold" id="heroRegisterBtn" style="padding: 14px 32px; font-size: 1.1rem;">
+                Start with $1,000 Free Chips 🪙
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline" style="padding: 14px 28px; font-size: 1.1rem;">
+                Member Sign In
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Featured Game Cards -->
+<section style="margin-top: 40px;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="font-family: var(--font-heading); font-size: 2.2rem; color: var(--text-primary); letter-spacing: 1px;">
+            FLAGSHIP CASINO ENGINES
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Real-time algorithmic fairness with responsive web and native Flutter mobile integration.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px;">
+        <!-- Baccarat Card -->
+        <div class="glass-card" style="padding: 32px; border-top: 4px solid var(--neon-cyan);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--neon-cyan); font-weight: 700;">TABLE CLASSIC</span>
+                <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--neon-cyan); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem;">8-Deck Shoe</span>
+            </div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 12px; color: #fff;">
+                Baccarat (Punto Banco)
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px;">
+                Experience Macau & Vegas style high-roller Baccarat. Authentic third-card tableau drawing rules, natural 8/9 payouts, 5% Banker commission, and 8:1 Tie bonuses.
+            </p>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+                <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Player 1:1</span>
+                <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Banker 0.95:1</span>
+                <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Tie 8:1</span>
+            </div>
+
+            <a href="{% url 'baccarat' %}" class="btn btn-gold" style="width: 100%;">
+                Play Baccarat Now &rarr;
+            </a>
+        </div>
+
+        <!-- Cross Chicken (Crash) Card -->
+        <div class="glass-card" style="padding: 32px; border-top: 4px solid var(--gold-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--gold-primary); font-weight: 700;">PROVABLY FAIR</span>
+                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--gold-primary); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem;">Up to 250x</span>
+            </div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 12px; color: #fff;">
+                Cross Chicken (Crash)
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px;">
+                Watch the intrepid chicken dash across the multi-lane expressway! Multipliers skyrocket each second. Cash out before the truck splats to claim massive winnings.
+            </p>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+                <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">HMAC-SHA256</span>
+                <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Real-time Canvas</span>
+                <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Auto Cashout</span>
+            </div>
+
+            <a href="{% url 'crash' %}" class="btn btn-gold" style="width: 100%;">
+                Play Cross Chicken &rarr;
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Fairness & Security Info -->
+<section style="margin-top: 60px; padding: 40px; background: rgba(14, 19, 31, 0.6); border: 1px solid var(--border-glass); border-radius: var(--radius-lg);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; text-align: center;">
+        <div>
+            <div style="font-size: 2.2rem; margin-bottom: 10px;">🔒</div>
+            <h4 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 8px;">Provably Fair Cryptography</h4>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+                Every crash point is calculated using SHA-256 and HMAC hashes before bets are placed. Fully verifiable by any player.
+            </p>
+        </div>
+        <div>
+            <div style="font-size: 2.2rem; margin-bottom: 10px;">⚡</div>
+            <h4 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 8px;">HTMX Dynamic Updates</h4>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+                Instant card deals, bet swaps, and balance reloads with zero full-page reloads and seamless UX.
+            </p>
+        </div>
+        <div>
+            <div style="font-size: 2.2rem; margin-bottom: 10px;">📱</div>
+            <h4 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 8px;">Cross-Platform Mobile Ready</h4>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+                Native Flutter companion application consuming the Django REST Framework API with synchronized wallets.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
